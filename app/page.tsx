@@ -11,12 +11,25 @@ import { mockAssignments, mockSubmissions } from "@/lib/mock-data"
 import Link from "next/link"
 import LoginPage from "./auth/login/page"
 import SubmissionPieChart from "@/components/submissionPichart"
+import { useAssignmentStatsInstructorQuery, useRecentAssignmentsQuery } from "@/redux/api/assignmentApi"
+import { Assignment } from "@/types"
+import { useSubmissionChartInstructorQuery } from "@/redux/api/submissionApi"
 
 export default function Dashboard() {
   const { currentUser, isAuthenticated, isLoading } = useUser()
+  const { data, isLoading: statsLoading } = useAssignmentStatsInstructorQuery({})
+  const { data: assignmentData, isLoading: assignmentLoading } = useRecentAssignmentsQuery({})
+ 
+  
+  
+  const { totalAssignments, totalSubmissions, pendingReview, completionRate } = data?.data || {}
+  const assignments = assignmentData?.data
+
+
+
 
   // Show loading spinner while checking authentication
-  if (isLoading) {
+  if (isLoading || statsLoading || assignmentLoading ) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         <div className="text-center">
@@ -35,10 +48,10 @@ export default function Dashboard() {
   const isInstructor = currentUser.role === UserRole.INSTRUCTOR
 
   // Calculate stats
-  const totalAssignments = mockAssignments.length
-  const totalSubmissions = mockSubmissions.length
-  const pendingSubmissions = mockSubmissions.filter((s) => s.status === "PENDING").length
-  const acceptedSubmissions = mockSubmissions.filter((s) => s.status === "ACCEPTED").length
+  // const totalAssignments = mockAssignments.length
+  // const totalSubmissions = mockSubmissions.length
+  // const pendingSubmissions = mockSubmissions.filter((s) => s.status === "PENDING").length
+  // const acceptedSubmissions = mockSubmissions.filter((s) => s.status === "ACCEPTED").length
 
   const studentSubmissions = mockSubmissions.filter((s) => s.studentId === currentUser.id)
   const studentAccepted = studentSubmissions.filter((s) => s.status === "ACCEPTED").length
@@ -91,7 +104,7 @@ export default function Dashboard() {
                   <Clock className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{pendingSubmissions}</div>
+                  <div className="text-2xl font-bold">{pendingReview}</div>
                   <p className="text-xs text-muted-foreground">Awaiting review</p>
                 </CardContent>
               </Card>
@@ -102,7 +115,7 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {totalSubmissions > 0 ? Math.round((acceptedSubmissions / totalSubmissions) * 100) : 0}%
+                    {completionRate.toFixed(2)}%
                   </div>
                   <p className="text-xs text-muted-foreground">Accepted submissions</p>
                 </CardContent>
@@ -173,7 +186,7 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {mockAssignments.slice(0, 3).map((assignment) => (
+                {assignments.slice(0, 5).map((assignment: Assignment) => (
                   <div key={assignment.id} className="flex items-center justify-between p-3 rounded-lg border">
                     <div className="flex-1">
                       <h4 className="font-medium">{assignment.title}</h4>

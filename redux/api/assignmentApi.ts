@@ -2,93 +2,43 @@ import { baseApi } from "@/redux/api/baseApi";
 
 export const assignmentApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.mutation({
-      query: (credentials) => ({
-        url: "/auth/login",
-        method: "POST",
-        body: credentials,
-      }),
-      invalidatesTags: ["User"],
-    }),
-    register: builder.mutation({
-      query: (credentials) => ({
-        url: "/users/register",
-        method: "POST",
-        body: credentials,
-      }),
-      invalidatesTags: ["User"],
-    }),
-    socialAuth: builder.mutation({
-      query: (credentials) => ({
-        url: "/auth/social-login",
-        method: "POST",
-        body: credentials,
-      }),
-      invalidatesTags: ["User"],
-    }),
-    forgotPassword: builder.mutation({
-      query: (email) => ({
-        url: "/auth/forgot-password",
-        method: "POST",
-        body: email,
-      }),
-      invalidatesTags: ["User"],
-    }),
-    resendOtp: builder.mutation({
-      query: (email) => ({
-        url: "/auth/resend-otp",
-        method: "POST",
-        body: email,
-      }),
-    }),
-    verifyOtp: builder.mutation({
-      query: (data) => ({
-        url: "/auth/verify-otp",
-        method: "POST",
-        body: data,
-      }),
-    }),
-    resetPassword: builder.mutation({
-      query: (data) => ({
-        url: "/auth/reset-password",
-        method: "POST",
-        body: data,
-      }),
-    }),
-    changePassword: builder.mutation({
-      query: (data) => ({
-        url: "/auth/change-password",
-        method: "POST",
-        body: data,
-      }),
-    }),
-    getMe: builder.query({
+    assignmentStatsInstructor: builder.query({
       query: () => ({
-        url: "/users/me",
+        url: "/assignments/assignment-stats/instructor",
         method: "GET",
       }),
-      providesTags: ["User"],
+      providesTags: ["Assignment"],
     }),
-    updateUser: builder.mutation({
+
+    recentAssignments: builder.query({
+      query: () => ({
+        url: "/assignments/recent-assignments/instructor",
+        method: "GET",
+      }),
+      providesTags: ["Assignment"],
+    }),
+
+    crateAssignment: builder.mutation({
       query: (data) => ({
-        url: "/users/profile",
-        method: "PUT",
+        url: "/assignments/create",
+        method: "POST",
         body: data,
       }),
-      invalidatesTags: ["User"],
+      invalidatesTags: ["Assignment"],
+    }),
+    getAllAssignmentByInstructor: builder.query({
+      query: () => ({
+        url: "/assignments/all-assignments/instructor",
+        method: "GET",
+      }),
+      providesTags: ["Assignment"],
     }),
   }),
 });
 
 export const {
-  useLoginMutation,
-  useRegisterMutation,
-  useSocialAuthMutation,
-  useForgotPasswordMutation,
-  useResendOtpMutation,
-  useVerifyOtpMutation,
-  useResetPasswordMutation,
-  useChangePasswordMutation,
-  useGetMeQuery,
-  useUpdateUserMutation,
+  useAssignmentStatsInstructorQuery,
+  useRecentAssignmentsQuery,
+  useCrateAssignmentMutation,
+  useGetAllAssignmentByInstructorQuery
 } = assignmentApi;

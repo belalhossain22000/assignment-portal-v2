@@ -3,6 +3,7 @@
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { useSubmissionChartInstructorQuery } from "@/redux/api/submissionApi"
 
 enum SubmissionStatus {
   PENDING = "PENDING",
@@ -89,8 +90,10 @@ const chartConfig = {
     color: "hsl(0, 84%, 60%)",
   },
 }
-
+//Todo: need to integrate the api
 export default function SubmissionPieChart() {
+   const { data: submissionData, } = useSubmissionChartInstructorQuery({})
+  const submissionChartData = submissionData?.data
   // Process the data to count submissions by status
   const statusCounts = mockSubmissions.reduce(
     (acc, submission) => {

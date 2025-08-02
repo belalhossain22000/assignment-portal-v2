@@ -11,6 +11,7 @@ import { useUser } from "@/lib/user-context"
 import { mockAssignments, mockSubmissions } from "@/lib/mock-data"
 import Link from "next/link"
 import { Layout } from "@/components/layout"
+import { useGetAllAssignmentByInstructorQuery } from "@/redux/api/assignmentApi"
 
 export default function Assignments() {
   const { currentUser } = useUser()
@@ -18,13 +19,16 @@ export default function Assignments() {
   const [statusFilter, setStatusFilter] = useState("all")
   const [sortBy, setSortBy] = useState("deadline")
 
+  const {data,isLoading}=useGetAllAssignmentByInstructorQuery({})
+  console.log(data?.data?.assignments);
+
   const getUserSubmission = (assignmentId: string) => {
     return mockSubmissions.find((s) => s.assignmentId === assignmentId && s.studentId === currentUser?.id)
   }
 
   // Filter and sort assignments
-  const filteredAssignments = mockAssignments
-    .filter((assignment) => {
+  const filteredAssignments = data?.data?.assignments
+    .filter((assignment:any) => {
       const matchesSearch =
         assignment.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         assignment.description.toLowerCase().includes(searchTerm.toLowerCase())
@@ -40,12 +44,16 @@ export default function Assignments() {
 
       return true
     })
-    .sort((a, b) => {
+    .sort((a:any, b:any) => {
       if (sortBy === "deadline") return new Date(a.deadline).getTime() - new Date(b.deadline).getTime()
       if (sortBy === "title") return a.title.localeCompare(b.title)
       if (sortBy === "created") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       return 0
     })
+
+    if(isLoading){
+      return <div>Loading...</div>
+    }
 
   return (
     <Layout>
@@ -129,7 +137,7 @@ export default function Assignments() {
         {/* Assignments Grid */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-            {filteredAssignments.map((assignment) => {
+            {filteredAssignments.map((assignment:any) => {
               const userSubmission = getUserSubmission(assignment.id)
               const isOverdue = new Date(assignment.deadline) < new Date()
               const assignmentSubmissions = mockSubmissions.filter((s) => s.assignmentId === assignment.id)
@@ -206,9 +214,9 @@ export default function Assignments() {
                       {currentUser?.role === "INSTRUCTOR" && (
                         <div className="flex items-center text-sm text-gray-600">
                           <div className="w-4 h-4 mr-3 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center">
-                            <span className="text-xs text-white font-bold">{assignmentSubmissions.length}</span>
+                            <span className="text-xs text-white font-bold">{assignment?.submissions?.length}</span>
                           </div>
-                          <span>{assignmentSubmissions.length} submissions</span>
+                          <span>{assignment?.submissions?.length} submissions</span>
                         </div>
                       )}
 

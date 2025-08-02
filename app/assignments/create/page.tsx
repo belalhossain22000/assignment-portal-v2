@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-
+import { Toaster, toast } from 'sonner';
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -18,6 +18,7 @@ import { Layout } from "@/components/layout"
 import { useUser } from "@/lib/user-context"
 import { UserRole } from "@/lib/types"
 import Link from "next/link"
+import { useCrateAssignmentMutation } from "@/redux/api/assignmentApi"
 
 export default function CreateAssignmentPage() {
   const { currentUser } = useUser()
@@ -27,6 +28,7 @@ export default function CreateAssignmentPage() {
   const [maxPoints, setMaxPoints] = useState("")
   const [deadline, setDeadline] = useState<Date>()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [createAssignmentFn] = useCrateAssignmentMutation()
 
   // Redirect if not instructor
   if (!currentUser || currentUser.role !== UserRole.INSTRUCTOR) {
@@ -43,29 +45,46 @@ export default function CreateAssignmentPage() {
     )
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+  setIsSubmitting(true)
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    // In a real app, you would save to database here
-    console.log("Creating assignment:", {
+  try {
+    const res = await createAssignmentFn({
       title,
       description,
-      maxPoints: Number.parseInt(maxPoints),
-      deadline,
+      deadline: deadline,
       instructorId: currentUser.id,
     })
 
+    // Check if the response indicates success
+    if (res.data?.success) {
+      toast.success("Assignment created successfully!")
+      router.push("/assignments")
+    } else {
+      // Handle known API error (e.g. validation, bad request)
+      const errorMessage = res.data?.message || "Failed to create assignment"
+      toast.error(errorMessage)
+    }
+  } catch (error: unknown) {
+    // Handle unexpected errors (network failure, server down, etc.)
+    let errorMessage = "An unknown error occurred"
+    if (error instanceof Error) {
+      errorMessage = error.message
+    }
+    console.error("Create assignment error:", error)
+    toast.error(`Failed to create assignment: ${errorMessage}`)
+  } finally {
     setIsSubmitting(false)
-    router.push("/assignments")
   }
+}
+
+
 
   return (
     <Layout>
       <div className="max-w-2xl mx-auto">
+         <Toaster />
         {/* Header */}
         <div className="mb-8">
           <Link href="/assignments" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700 mb-4">
