@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { BookOpen, Mail, Lock, User, UserCheck, ArrowRight, Sparkles } from "lucide-react"
 import { UserRole } from "@/lib/types"
 import Link from "next/link"
+import { useRegisterMutation } from "@/redux/api/authApi"
 
 export default function Register() {
   const [name, setName] = useState("")
@@ -21,7 +22,7 @@ export default function Register() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const router = useRouter()
-
+  const [registerFn, { isLoading: registerLoading }] = useRegisterMutation()
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
@@ -41,13 +42,16 @@ export default function Register() {
         return
       }
 
-      // Simulate API call
-      setTimeout(() => {
-        // In real implementation, you would create account with your backend
-        console.log("Creating account:", { name, email, password, role })
-        router.push("/auth/login")
+      const res = await registerFn({ name, email, password, role }).unwrap()
+      if (!res.success) {
+        setError(res.error.message)
         setIsLoading(false)
-      }, 1000)
+        return
+      }
+
+      router.push("/auth/login")
+      setIsLoading(false)
+
     } catch (err) {
       setError("An error occurred during registration")
       setIsLoading(false)

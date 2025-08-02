@@ -4,10 +4,15 @@ import type React from "react"
 import { createContext, useContext, useState, useEffect } from "react"
 import type { User, UserRole } from "./types"
 import { mockUsers } from "./mock-data"
+import { useDispatch } from "react-redux"
+import { logout as logoutFn } from "@/redux/features/authSlice";
+import { useRouter } from "next/navigation"
+
+
 
 interface UserContextType {
   currentUser: User | null
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
+  login: (user: any) => void
   logout: () => void
   isAuthenticated: boolean
   isLoading: boolean
@@ -19,7 +24,8 @@ const UserContext = createContext<UserContextType | undefined>(undefined)
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-
+  const dispatch = useDispatch()
+  const router = useRouter()
   useEffect(() => {
     // Check for stored user session on app load
     const storedUser = localStorage.getItem("currentUser")
@@ -35,14 +41,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(false)
   }, [])
 
-  const login = async (email: string, password: string) => {
+  const login = (user: any) => {
     setIsLoading(true)
 
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    // Find user by email (password is ignored in demo)
-    const user = mockUsers.find((u) => u.email.toLowerCase() === email.toLowerCase())
 
     if (user) {
       setCurrentUser(user)
@@ -59,7 +60,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }
 
   const logout = () => {
+    dispatch(logoutFn())
     setCurrentUser(null)
+    router.push("/auth/login")
     localStorage.removeItem("currentUser")
   }
 

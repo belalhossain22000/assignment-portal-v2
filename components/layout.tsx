@@ -50,7 +50,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <span className="ml-2 text-xl font-bold text-gray-900">Assignment Portal</span>
           </div>
 
-          {/* Role Switcher - Demo Only */}
+          {/* Role Switcher - Demo Only
           <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
             <p className="text-sm text-blue-700 mb-2">Demo Mode - Switch Role:</p>
             <Button
@@ -62,7 +62,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <RefreshCw className="h-4 w-4 mr-2" />
               Switch to {currentUser.role === UserRole.INSTRUCTOR ? "Student" : "Instructor"}
             </Button>
-          </div>
+          </div> */}
 
           <nav className="flex flex-1 flex-col">
             <ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -105,7 +105,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Mobile Role Switcher */}
-          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mt-4">
+          {/* <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mt-4">
             <p className="text-sm text-blue-700 mb-2">Demo Mode - Switch Role:</p>
             <Button
               onClick={handleRoleSwitch}
@@ -116,7 +116,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <RefreshCw className="h-4 w-4 mr-2" />
               Switch to {currentUser.role === UserRole.INSTRUCTOR ? "Student" : "Instructor"}
             </Button>
-          </div>
+          </div> */}
 
           <nav className="flex flex-1 flex-col mt-8">
             <ul role="list" className="space-y-1">

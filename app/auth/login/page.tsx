@@ -10,6 +10,10 @@ import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { BookOpen, Mail, Lock, ArrowRight, Sparkles, User, GraduationCap } from "lucide-react"
 import { useUser } from "@/lib/user-context"
+import { useDispatch } from "react-redux"
+import { setUser } from "@/redux/features/authSlice"
+import { useLoginMutation } from "@/redux/api/authApi"
+import Link from "next/link"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -17,50 +21,55 @@ export default function LoginPage() {
   const [error, setError] = useState("")
   const { login, isLoading } = useUser()
   const router = useRouter()
+  const dispatch = useDispatch()
+  const [loginFn,{isLoading: loginLoading}] = useLoginMutation()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
 
     try {
-      const result = await login(email, password)
-      if (result.success) {
-        router.push("/") // Redirect to dashboard after successful login
+      const res = await loginFn({ email, password }).unwrap()
+
+      if (res.success) {
+        dispatch(setUser({ token: res?.data?.token }))
+        login(res.data.user)
+        router.push("/")
       } else {
-        setError(result.error || "Login failed. Please try again.")
+        setError(res?.error || "Login failed. Please try again.")
       }
     } catch (err: any) {
       setError(err.message || "Login failed. Please try again.")
     }
   }
 
-  const handleDemoLogin = async (userType: "INSTRUCTOR" | "STUDENT") => {
-    const demoEmail = userType === "INSTRUCTOR" ? "sarah.johnson@university.edu" : "alex.chen@student.edu"
+  // const handleDemoLogin = async (userType: "INSTRUCTOR" | "STUDENT") => {
+  //   const demoEmail = userType === "INSTRUCTOR" ? "sarah.johnson@university.edu" : "alex.chen@student.edu"
 
-    setEmail(demoEmail)
-    setError("")
+  //   setEmail(demoEmail)
+  //   setError("")
 
-    try {
-      const result = await login(demoEmail, "demo")
-      if (result.success) {
-        router.push("/")
-      } else {
-        setError(result.error || "Demo login failed.")
-      }
-    } catch (err: any) {
-      setError(err.message || "Demo login failed.")
-    }
-  }
+  //   try {
+  //     const result = await login(demoEmail, "demo")
+  //     if (result.success) {
+  //       router.push("/")
+  //     } else {
+  //       setError(result.error || "Demo login failed.")
+  //     }
+  //   } catch (err: any) {
+  //     setError(err.message || "Demo login failed.")
+  //   }
+  // }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 shadow-lg shadow-blue-500/25">
+          <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-green-600 to-blue-600 shadow-lg shadow-green-500/25">
             <BookOpen className="h-8 w-8 text-white" />
           </div>
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 text-sm font-medium mb-4">
+          <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-green-100 to-blue-100 text-green-700 text-sm font-medium mb-4">
             <Sparkles className="w-4 h-4 mr-2" />
             Welcome to Assignment Portal
           </div>
@@ -71,11 +80,11 @@ export default function LoginPage() {
         </div>
 
         {/* Demo Login Buttons */}
-        <div className="mb-6 space-y-3">
+        {/* <div className="mb-6 space-y-3">
           <p className="text-sm text-center text-gray-600 mb-3">Quick Demo Access:</p>
           <div className="grid grid-cols-2 gap-3">
             <Button
-              onClick={() => handleDemoLogin("INSTRUCTOR")}
+              // onClick={() => handleDemoLogin("INSTRUCTOR")}
               variant="outline"
               className="flex items-center justify-center space-x-2 bg-white/60 backdrop-blur-sm border-blue-200 hover:bg-blue-50"
               disabled={isLoading}
@@ -84,7 +93,7 @@ export default function LoginPage() {
               <span>Instructor</span>
             </Button>
             <Button
-              onClick={() => handleDemoLogin("STUDENT")}
+              // onClick={() => handleDemoLogin("STUDENT")}
               variant="outline"
               className="flex items-center justify-center space-x-2 bg-white/60 backdrop-blur-sm border-green-200 hover:bg-green-50"
               disabled={isLoading}
@@ -93,10 +102,10 @@ export default function LoginPage() {
               <span>Student</span>
             </Button>
           </div>
-        </div>
+        </div> */}
 
         {/* Divider */}
-        <div className="relative mb-6">
+        {/* <div className="relative mb-6">
           <div className="absolute inset-0 flex items-center">
             <span className="w-full border-t border-gray-300" />
           </div>
@@ -105,7 +114,7 @@ export default function LoginPage() {
               Or continue with email
             </span>
           </div>
-        </div>
+        </div> */}
 
         {/* Login Form */}
         <Card className="border-0 shadow-2xl bg-white/80 backdrop-blur-sm">
@@ -157,10 +166,10 @@ export default function LoginPage() {
 
               <Button
                 type="submit"
-                className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-500/25 text-white font-semibold"
-                disabled={isLoading}
+                className="w-full h-12 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 shadow-lg shadow-green-500/25 text-white font-semibold"
+                disabled={isLoading || loginLoading}
               >
-                {isLoading ? (
+                {isLoading || loginLoading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                     Signing In...
@@ -173,7 +182,14 @@ export default function LoginPage() {
                 )}
               </Button>
             </form>
-
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-600">
+                Don't have an account?{" "}
+                <Link href="/auth/register" className="font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+                  Sign Up
+                </Link>
+              </p>
+            </div>
             {/* Demo Credentials */}
             <div className="mt-6 p-4 bg-gray-50 rounded-lg">
               <p className="text-sm font-medium text-gray-700 mb-2">Demo Credentials:</p>

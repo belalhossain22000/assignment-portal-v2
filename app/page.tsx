@@ -10,6 +10,7 @@ import { BookOpen, FileText, Clock, CheckCircle, AlertCircle, Plus, TrendingUp, 
 import { mockAssignments, mockSubmissions } from "@/lib/mock-data"
 import Link from "next/link"
 import LoginPage from "./auth/login/page"
+import SubmissionPieChart from "@/components/submissionPichart"
 
 export default function Dashboard() {
   const { currentUser, isAuthenticated, isLoading } = useUser()
@@ -194,7 +195,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Recent Submissions */}
-          <Card>
+          {/* <Card>
             <CardHeader>
               <CardTitle>{isInstructor ? "Recent Submissions" : "My Recent Submissions"}</CardTitle>
             </CardHeader>
@@ -230,7 +231,8 @@ export default function Dashboard() {
                 ))}
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
+          <SubmissionPieChart />
         </div>
 
         {/* Quick Actions */}

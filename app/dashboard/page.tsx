@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge"
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts"
 import { Plus, FileText, Clock, CheckCircle, XCircle, User, LogOut } from "lucide-react"
 import { mockAssignments, mockSubmissions } from "@/lib/mock-data"
+import { CreateAssignmentDialog } from "@/components/create-assignment-dialog"
+import SubmissionPieChart from "@/components/submissionPichart"
 
 const COLORS = {
   pending: "#f59e0b",
@@ -62,7 +64,7 @@ export default function Dashboard() {
   ]
 
   const userSubmissions =
-    userRole === "STUDENT" ? mockSubmissions.filter((s) => s.studentEmail === userEmail) : mockSubmissions
+    userRole === "STUDENT" ? mockSubmissions.filter((s:any) => s.studentEmail === userEmail) : mockSubmissions
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -239,6 +241,7 @@ export default function Dashboard() {
                 </div>
               </CardContent>
             </Card>
+        
           </div>
 
           {/* Sidebar */}
