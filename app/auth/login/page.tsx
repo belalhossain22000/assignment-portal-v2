@@ -195,12 +195,12 @@ export default function LoginPage() {
               <p className="text-sm font-medium text-gray-700 mb-2">Demo Credentials:</p>
               <div className="text-xs text-gray-600 space-y-1">
                 <p>
-                  <strong>Instructor:</strong> sarah.johnson@university.edu
+                  <strong>Instructor:</strong> instructor-1@gmail.com
                 </p>
                 <p>
-                  <strong>Student:</strong> alex.chen@student.edu
+                  <strong>Student:</strong> user@gmail4.com
                 </p>
-                <p className="text-gray-500">Any password works for demo</p>
+                <p className="text-gray-500"> password: 12345678</p>
               </div>
             </div>
           </CardContent>
